@@ -29,8 +29,8 @@ function App() {
       const response = await fetch(`${API_URL}/api/login`, {
         method: "POST",
         headers: {
-  "Content-Type": "application/json",
-},
+          "Content-Type": "application/json",
+        },
         credentials: "include",
         body: JSON.stringify({
           username: username,
@@ -255,20 +255,40 @@ function App() {
     }
   }, [isLoggedIn]);
 
+  // =========================================
   // LOGIN PAGE
+  // =========================================
+
   if (!isLoggedIn) {
     return (
-      <div className="login-container">
+      <div className="login-page">
+
         <div className="login-card">
-          <h1>LavaLust Product System</h1>
 
-          <p className="subtitle">
-            Login to continue
-          </p>
+          <div className="login-header">
 
-          <form onSubmit={handleLogin}>
-            <div className="form-group">
-              <label>Username</label>
+            <div className="logo-circle">
+              L
+            </div>
+
+            <h1>LavaLust</h1>
+
+            <p>
+              Sign in to manage your products
+            </p>
+
+          </div>
+
+          <form
+            className="login-form"
+            onSubmit={handleLogin}
+          >
+
+            <div className="input-group">
+
+              <label>
+                Username
+              </label>
 
               <input
                 type="text"
@@ -279,10 +299,14 @@ function App() {
                 placeholder="Enter username"
                 required
               />
+
             </div>
 
-            <div className="form-group">
-              <label>Password</label>
+            <div className="input-group">
+
+              <label>
+                Password
+              </label>
 
               <input
                 type="password"
@@ -293,202 +317,341 @@ function App() {
                 placeholder="Enter password"
                 required
               />
+
             </div>
 
-            <button type="submit">
+            <button
+              className="login-button"
+              type="submit"
+            >
               Login
             </button>
+
           </form>
 
           {message && (
-            <p className="message">
+            <p className="login-message">
               {message}
             </p>
           )}
+
         </div>
+
       </div>
     );
   }
 
+  // =========================================
   // PRODUCT MANAGEMENT PAGE
+  // =========================================
+
   return (
-    <div className="container">
-      <h1>PRODUCT MANAGEMENT</h1>
+    <div className="product-page">
 
-      <p>
-        Welcome, <strong>{username}</strong>!
-      </p>
+      <div className="product-container">
 
-      <div className="top-buttons">
-        <button onClick={fetchProducts}>
-          Refresh Products
-        </button>
+        <div className="product-header">
 
-        <button onClick={handleLogout}>
-          Logout
-        </button>
+          <div>
+
+            <p className="small-title">
+              LAVALUST
+            </p>
+
+            <h1>
+              Product Management
+            </h1>
+
+            <p className="welcome-text">
+              Welcome, <strong>{username}</strong>!
+            </p>
+
+          </div>
+
+          <div className="header-buttons">
+
+            <button
+              className="refresh-button"
+              onClick={fetchProducts}
+            >
+              Refresh
+            </button>
+
+            <button
+              className="logout-button"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+
+          </div>
+
+        </div>
+
+        {message && (
+          <div className="status-message">
+            {message}
+          </div>
+        )}
+
+        {/* ADD / EDIT PRODUCT */}
+
+        <div className="form-card">
+
+          <div className="section-title">
+
+            <div className="section-icon">
+              {editingId ? "✎" : "+"}
+            </div>
+
+            <div>
+
+              <h2>
+                {editingId
+                  ? "Edit Product"
+                  : "Add Product"}
+              </h2>
+
+              <p>
+                {editingId
+                  ? "Update the product information below."
+                  : "Enter the details of your new product."}
+              </p>
+
+            </div>
+
+          </div>
+
+          <form
+            className="product-form"
+            onSubmit={
+              editingId
+                ? handleUpdateProduct
+                : handleAddProduct
+            }
+          >
+
+            <div className="product-field">
+
+              <label>
+                Product Name
+              </label>
+
+              <input
+                type="text"
+                value={productName}
+                onChange={(e) =>
+                  setProductName(e.target.value)
+                }
+                placeholder="Enter product name"
+                required
+              />
+
+            </div>
+
+            <div className="product-field">
+
+              <label>
+                Description
+              </label>
+
+              <textarea
+                value={description}
+                onChange={(e) =>
+                  setDescription(e.target.value)
+                }
+                placeholder="Enter product description"
+                required
+              />
+
+            </div>
+
+            <div className="product-field">
+
+              <label>
+                Price
+              </label>
+
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={price}
+                onChange={(e) =>
+                  setPrice(e.target.value)
+                }
+                placeholder="Enter price"
+                required
+              />
+
+            </div>
+
+            <div className="product-field">
+
+              <label>
+                Quantity
+              </label>
+
+              <input
+                type="number"
+                min="0"
+                value={quantity}
+                onChange={(e) =>
+                  setQuantity(e.target.value)
+                }
+                placeholder="Enter quantity"
+                required
+              />
+
+            </div>
+
+            <div className="form-actions">
+
+              <button
+                className="primary-button"
+                type="submit"
+              >
+                {editingId
+                  ? "Update Product"
+                  : "Add Product"}
+              </button>
+
+              {editingId && (
+                <button
+                  className="cancel-button"
+                  type="button"
+                  onClick={clearForm}
+                >
+                  Cancel
+                </button>
+              )}
+
+            </div>
+
+          </form>
+
+        </div>
+
+        {/* PRODUCT LIST */}
+
+        <div className="list-card">
+
+          <div className="list-header">
+
+            <div>
+
+              <h2>
+                Product List
+              </h2>
+
+              <p>
+                Manage your available products.
+              </p>
+
+            </div>
+
+            <span className="product-count">
+              {products.length} Products
+            </span>
+
+          </div>
+
+          {loading ? (
+            <div className="empty-message">
+              Loading products...
+            </div>
+          ) : products.length === 0 ? (
+            <div className="empty-message">
+              No products found.
+            </div>
+          ) : (
+            <div className="table-wrapper">
+
+              <table className="product-table">
+
+                <thead>
+
+                  <tr>
+                    <th>ID</th>
+                    <th>Product Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Action</th>
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  {products.map((product) => (
+                    <tr key={product.id}>
+
+                      <td>
+                        <span className="id-badge">
+                          #{product.id}
+                        </span>
+                      </td>
+
+                      <td className="product-name-cell">
+                        {product.product_name}
+                      </td>
+
+                      <td>
+                        {product.description}
+                      </td>
+
+                      <td className="price-cell">
+                        ₱
+                        {Number(product.price).toFixed(2)}
+                      </td>
+
+                      <td>
+                        {product.quantity}
+                      </td>
+
+                      <td>
+
+                        <div className="action-buttons">
+
+                          <button
+                            className="edit-button"
+                            onClick={() =>
+                              startEdit(product)
+                            }
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            className="delete-button"
+                            onClick={() =>
+                              handleDeleteProduct(
+                                product.id
+                              )
+                            }
+                          >
+                            Delete
+                          </button>
+
+                        </div>
+
+                      </td>
+
+                    </tr>
+                  ))}
+
+                </tbody>
+
+              </table>
+
+            </div>
+          )}
+
+        </div>
+
       </div>
 
-      {message && (
-        <p className="message">
-          {message}
-        </p>
-      )}
-
-      {/* ADD / EDIT FORM */}
-      <h2>
-        {editingId
-          ? "Edit Product"
-          : "Add Product"}
-      </h2>
-
-      <form
-        onSubmit={
-          editingId
-            ? handleUpdateProduct
-            : handleAddProduct
-        }
-      >
-        <div className="form-group">
-          <label>Product Name</label>
-
-          <input
-            type="text"
-            value={productName}
-            onChange={(e) =>
-              setProductName(e.target.value)
-            }
-            placeholder="Enter product name"
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Description</label>
-
-          <textarea
-            value={description}
-            onChange={(e) =>
-              setDescription(e.target.value)
-            }
-            placeholder="Enter product description"
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Price</label>
-
-          <input
-            type="number"
-            step="0.01"
-            min="0"
-            value={price}
-            onChange={(e) =>
-              setPrice(e.target.value)
-            }
-            placeholder="Enter price"
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Quantity</label>
-
-          <input
-            type="number"
-            min="0"
-            value={quantity}
-            onChange={(e) =>
-              setQuantity(e.target.value)
-            }
-            placeholder="Enter quantity"
-            required
-          />
-        </div>
-
-        <button type="submit">
-          {editingId
-            ? "Update Product"
-            : "Add Product"}
-        </button>
-
-        {editingId && (
-          <button
-            type="button"
-            onClick={clearForm}
-          >
-            Cancel
-          </button>
-        )}
-      </form>
-
-      {/* PRODUCT LIST */}
-      <h2>Product List</h2>
-
-      {loading ? (
-        <p>Loading products...</p>
-      ) : products.length === 0 ? (
-        <p>No products found.</p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Product Name</th>
-              <th>Description</th>
-              <th>Price</th>
-              <th>Quantity</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {products.map((product) => (
-              <tr key={product.id}>
-                <td>{product.id}</td>
-
-                <td>
-                  {product.product_name}
-                </td>
-
-                <td>
-                  {product.description}
-                </td>
-
-                <td>
-                  ₱
-                  {Number(product.price).toFixed(2)}
-                </td>
-
-                <td>
-                  {product.quantity}
-                </td>
-
-                <td>
-                  <button
-                    onClick={() =>
-                      startEdit(product)
-                    }
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      handleDeleteProduct(
-                        product.id
-                      )
-                    }
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
     </div>
   );
 }
